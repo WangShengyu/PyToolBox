@@ -10,12 +10,12 @@ def run():
     if os.path.exists("build") and os.path.isdir("build"):
         shutil.rmtree("build")
     subprocess.run(["bloom-generate", "rosdebian", "--ros-distro", "melodic"])
-    result = common.get_cmd_output("fakeroot debian/rules binary")
-    result_lines = result.split("\n")
-    last_line = result_lines[-1]
-    m = re.search(".*building package '(.*)' in '(.*)'.", last_line)
-    package_name = m.group(1)
-    file_path = m.group(2)
+    common.get_cmd_output("fakeroot debian/rules binary")
+    dir_path = os.getcwd()
+    package_name = os.path.basename(dir_path)
+    deb_dir_path = os.path.join(dir_path, os.pardir)
+    deb_files = [f for f in os.listdir(deb_dir_path) if os.path.isfile(os.path.join(deb_dir_path, f)) and f[-4:] == ".deb"]
+    file_path = os.path.join(deb_dir_path, deb_files[0])
     version = generate_version.generate_full_version()
     if version == None:
         version = "1.0"
